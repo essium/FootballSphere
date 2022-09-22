@@ -1,0 +1,7 @@
+{
+	"namme": "FootballSphere",
+	"version_number": "1.0",
+	"website_url": "",
+	"description": "Automatically build the football-shaped dyson sphere",
+	"dependencies":["xiaoye97-BepInEx-5.4.17"]
+}
