@@ -62,7 +62,8 @@ namespace FootballSphere
             if (Input.GetKeyDown(keyBuild.Value))
             {
                 DysonSphereLayer singleSelectedLayer = __instance.selection.singleSelectedLayer;
-                if (singleSelectedLayer == null)
+                if (singleSelectedLayer == null || singleSelectedLayer.nodeCount != 0
+                    || Mathf.RoundToInt(GameMain.history.dysonNodeLatitude) != 90)
                 {
                     return;
                 }
