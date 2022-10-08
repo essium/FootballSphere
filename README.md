@@ -9,9 +9,8 @@ The 32-facet structure has the shortest frame length. This structure has 90 fram
 ||Default|Description|
 |:---|:---|:---|
 |`BuildShortKey`|q|shortkey for build the football shaped shpere|
-|`SegmentsInLongEdge`|6|divide the long frames into this number of equally sized sub-frames, must between 1 and 6|
-|`SegmentsInShortEdge`|4|divide the short frames into this number of equally sized sub-frames, must between 1 and 4|
-|`DrawShell`|true|whether automatically draw the dyson shells|
+|`CheatMode`|false|enable cheat mode|
+|`Angle`|4|angle between dyson nodes (in cheat mode between 1.0 and 18.0, in normal mode between 4.0 and 18.0)
 
 ----
 # 自动画球插件
@@ -24,11 +23,15 @@ The 32-facet structure has the shortest frame length. This structure has 90 fram
 ||默认值|描述|
 |:---|:---|:---|
 |`BuildShortKey`|q|自动建造快捷键|
-|`SegmentsInLongEdge`|6|把长棱均分为这么多份，必须在1-6之间|
-|`SegmentsInShortEdge`|4|把短棱均分为这么多份，必须在1-4之间|
-|`DrawShell`|true|是否画壳层|
+|`CheatMode`|false|使用作弊模式|
+|`Angle`|4|节点之间的角度（作弊模式该角度在1到18之间，正常模式在4到18之间）|
 
 ## ChangeLog
 
-### 1.0
+### 1.0.1
+
+Add cheat mode, which can let you draw dyson sphere even when you not unlock the required tech.
+
+### 1.0.0
+
 Initial version of this plugin.

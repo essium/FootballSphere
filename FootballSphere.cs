@@ -4,52 +4,53 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using System;
 using FootballSphere.Geometry;
+using BepInEx.Logging;
 
 namespace FootballSphere
 {
     [BepInPlugin(package, plugin, version)]
-    public class FootballSphere: BaseUnityPlugin
+    public class FootballSphere : BaseUnityPlugin
     {
         private const string package = "essium.DSP.FootballSphere";
         private const string plugin = "FootballSphere";
-        private const string version = "1.0";
+        private const string version = "1.0.1";
         private Harmony harmony;
         private static FootballData football;
+        private static ManualLogSource logger;
 
         public static int nodeProtoId;
         public static int frameProtoId;
         public static int shellProtoId;
 
-        public static ConfigEntry<string> keyBuild;
-        public static ConfigEntry<int> n;
-        public static ConfigEntry<int> m;
-        public static ConfigEntry<bool> drawShell;
+        private static ConfigEntry<string> keyBuild;
+        private static ConfigEntry<bool> cheatMode;
+        private static ConfigEntry<float> angle;
 
         private void BindConfig()
         {
             keyBuild = Config.Bind("Config", "BuildShortKey", "q", "construct football sphere shortkey");
-            n = Config.Bind("Config", "SegmentsInLongEdge", 6, "segment count in long edge [1 - 6]");
-            m = Config.Bind("Config", "SegmentsInShortEdge", 4, "segment count in short edge [1 - 4]");
-            drawShell = Config.Bind("Config", "DrawShell", true, "whether draw dyson shell");
+            cheatMode = Config.Bind("Config", "CheatMode", false, "cheat mode");
+            angle = Config.Bind("Config", "Angle", 4f, "angle between two nodes");
         }
 
         public void Start()
         {
             BindConfig();
             harmony = new Harmony(package + ":" + plugin + ":" + version);
-            football = new FootballData(n, m);
+            football = new FootballData(angle.Value, cheatMode.Value);
             try
             {
                 harmony.PatchAll(typeof(FootballSphere));
 
             } catch (Exception e)
             {
-                Logger.LogError(e);
+                LogInfo(e.Message);
             }
         }
 
         public void OnDestroy()
         {
+            BepInEx.Logging.Logger.Sources.Remove(logger);
             harmony.UnpatchAll();
         }
 
@@ -62,12 +63,7 @@ namespace FootballSphere
             if (Input.GetKeyDown(keyBuild.Value))
             {
                 DysonSphereLayer singleSelectedLayer = __instance.selection.singleSelectedLayer;
-                if (singleSelectedLayer == null || singleSelectedLayer.nodeCount != 0
-                    || Mathf.RoundToInt(GameMain.history.dysonNodeLatitude) != 90)
-                {
-                    return;
-                }
-                football.Draw(singleSelectedLayer, drawShell.Value);
+                football.Draw(singleSelectedLayer);
             }
         }
 
@@ -79,6 +75,16 @@ namespace FootballSphere
                 Vector3 p = x.Position(layer.orbitRadius);
                 layer.NewDysonNode(nodeProtoId, p);
             }
+        }
+
+        static FootballSphere()
+        {
+            logger = BepInEx.Logging.Logger.CreateLogSource(plugin);
+        }
+
+        public static void LogInfo(string msg)
+        {
+            logger.LogInfo(msg);
         }
     }
 }

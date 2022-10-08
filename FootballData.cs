@@ -1,15 +1,14 @@
-﻿using BepInEx.Configuration;
-using FootballSphere.Geometry;
+﻿using FootballSphere.Geometry;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq.Expressions;
 using UnityEngine;
 
 namespace FootballSphere
 {
     internal class FootballData
     {
+        private float angle;
+        private bool cheatMode;
         private int n;
         private int m;
         private int k, K;
@@ -19,7 +18,7 @@ namespace FootballSphere
 
         private void CreateNodes()
         {
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 nodes[i] = Calculator.AngularRatioPoint(
                     Calculator.a1x, Calculator.a1, 1f / n * (i + 1));
@@ -39,7 +38,7 @@ namespace FootballSphere
                 nodes[2 * n + m + i] = Calculator.AngularRatioPoint(
                     Calculator.a3, Calculator.a4, 1f / m * (i + 1));
             }
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
                 nodes[2 * n + 2 * m + i] = Calculator.AngularRatioPoint(
                     Calculator.a4, Calculator.a2x, 1f / n * (i + 1));
@@ -64,12 +63,12 @@ namespace FootballSphere
                 nodes[5 * n + 3 * m - 1 + i] = Calculator.AngularRatioPoint(
                     Calculator.a8, Calculator.a6, 1f / m * (i + 1));
             }
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
-                nodes[5*n + 4*m -1 + i] = Calculator.AngularRatioPoint(
+                nodes[5 * n + 4 * m - 1 + i] = Calculator.AngularRatioPoint(
                     Calculator.a6, Calculator.a6x, 1f / n * (i + 1));
             }
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
                 nodes[6 * n + 4 * m - 2 + i] = Calculator.AngularRatioPoint(
                     Calculator.a6, Calculator.a4, 1f / n * (i + 1));
@@ -89,12 +88,12 @@ namespace FootballSphere
                 nodes[9 * n + 4 * m - 3 + i] = Calculator.AngularRatioPoint(
                     Calculator.a11, Calculator.a10, 1f / n * (i + 1));
             }
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
                 nodes[10 * n + 4 * m - 3 + i] = Calculator.AngularRatioPoint(
                     Calculator.a10, Calculator.a8, 1f / n * (i + 1));
             }
-            for (int i = 0; i < m-1; i++)
+            for (int i = 0; i < m - 1; i++)
             {
                 nodes[11 * n + 4 * m - 4 + i] = Calculator.AngularRatioPoint(
                     Calculator.a10, Calculator.a10x, 1f / m * (i + 1));
@@ -104,7 +103,7 @@ namespace FootballSphere
                 nodes[11 * n + 5 * m - 5 + i] = Calculator.AngularRatioPoint(
                     Calculator.a11, Calculator.a12, 1f / m * (i + 1));
             }
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
                 nodes[11 * n + 6 * m - 5 + i] = Calculator.AngularRatioPoint(
                     Calculator.a12, Calculator.a12x, 1f / n * (i + 1));
@@ -126,20 +125,20 @@ namespace FootballSphere
             {
                 frames[0][j + 1] = j;
             }
-            frames[1] = new int[m+1];
+            frames[1] = new int[m + 1];
             for (int j = 0; j < m + 1; j++)
             {
                 frames[1][j] = n - 1 + j;
             }
             frames[2] = new int[n + 1];
-            for (int j = 0; j < n+1; j++)
+            for (int j = 0; j < n + 1; j++)
             {
-                frames[2][j] = n + m -1 + j;
+                frames[2][j] = n + m - 1 + j;
             }
             frames[3] = new int[m + 1];
             for (int j = 0; j < m + 1; j++)
             {
-                frames[3][j] = 2 * n + m -1 + j;
+                frames[3][j] = 2 * n + m - 1 + j;
             }
             frames[4] = new int[n + 1];
             for (int j = 0; j < n; j++)
@@ -154,7 +153,7 @@ namespace FootballSphere
                 frames[5][j + 1] = 3 * n + 2 * m - 1 + j;
             }
             frames[6] = new int[m + 1];
-            for (int j = 0; j < m+1; j++)
+            for (int j = 0; j < m + 1; j++)
             {
                 frames[6][j] = 4 * n + 2 * m - 2 + j;
             }
@@ -182,13 +181,13 @@ namespace FootballSphere
             }
             frames[10][n] = 2 * n + 2 * m - 1;
             frames[11] = new int[n + 1];
-            frames[11][0] = 4 * n + 3 * m -2;
+            frames[11][0] = 4 * n + 3 * m - 2;
             for (int j = 0; j < n; j++)
             {
-                frames[11][j + 1] = 7 * n + 4 * m -3 +j;
+                frames[11][j + 1] = 7 * n + 4 * m - 3 + j;
             }
             frames[12] = new int[n + 1];
-            for (int j = 0; j < n+1; j++)
+            for (int j = 0; j < n + 1; j++)
             {
                 frames[12][j] = 8 * n + 4 * m - 4 + j;
             }
@@ -409,11 +408,13 @@ namespace FootballSphere
             }
         }
 
-        public FootballData(ConfigEntry<int> n, ConfigEntry<int> m)
+        public FootballData(float angle, bool cheatMode)
         {
-            this.n = Math.Min(6, Math.Max(n.Value, 1));
-            this.m = Math.Min(4, Math.Max(m.Value, 1));
-            k = 12 * this.n + 6 * this.m - 6;
+            this.cheatMode = cheatMode;
+            this.angle = _in_range(cheatMode, angle);
+            n = Mathf.FloorToInt(Calculator.bigAngle / this.angle);
+            m = Mathf.FloorToInt(Calculator.smallAngle / this.angle);
+            k = 12 * n + 6 * m - 6;
             K = 5 * k;
             nodes = new LLtude[K];
             frames = new int[90][];
@@ -423,34 +424,50 @@ namespace FootballSphere
             CreateShell();
         }
 
-        public void Draw(DysonSphereLayer layer, bool drawShell)
+        public void Draw(DysonSphereLayer layer)
         {
+            bool lat75 = Mathf.RoundToInt(layer.gameData.history.dysonNodeLatitude) >= 75;
+            bool lat90 = Mathf.RoundToInt(layer.gameData.history.dysonNodeLatitude) >= 90;
             Dictionary<int, int> order2index = new Dictionary<int, int>();
             float radius = layer.orbitRadius;
-            for (int i = 0; i < nodes.Length; i++)
+            if (cheatMode || lat75)
             {
-                order2index.Add(i, layer.NewDysonNode(FootballSphere.nodeProtoId, nodes[i].Position(radius)));
-            }
-            for (int i = 0; i < frames.Length; i++)
-            {
-                for (int j = 0; j < frames[i].Length - 1; j++)
+                for (int i = 0; i < nodes.Length; i++)
                 {
-                    layer.NewDysonFrame(FootballSphere.frameProtoId, order2index[frames[i][j]], order2index[frames[i][j + 1]], false);
+                    order2index.Add(i, layer.NewDysonNode(FootballSphere.nodeProtoId, nodes[i].Position(radius)));
                 }
             }
-            if (!drawShell)
+            if (cheatMode || lat75)
             {
-                return;
-            }
-            for(int i = 0; i < shells.Length; i++)
-            {
-                List<int> shellNodes = new List<int>();
-                foreach (var order in shells[i])
+                for (int i = 0; i < frames.Length; i++)
                 {
-                    shellNodes.Add(order2index[order]);
+                    for (int j = 0; j < frames[i].Length - 1; j++)
+                    {
+                        layer.NewDysonFrame(FootballSphere.frameProtoId, order2index[frames[i][j]], order2index[frames[i][j + 1]], false);
+                    }
                 }
-                layer.NewDysonShell(FootballSphere.shellProtoId, shellNodes);
+            }
+            if (cheatMode || lat90)
+            {
+                for (int i = 0; i < shells.Length; i++)
+                {
+                    List<int> shellNodes = new List<int>();
+                    foreach (int order in shells[i])
+                    {
+                        shellNodes.Add(order2index[order]);
+                    }
+                    layer.NewDysonShell(FootballSphere.shellProtoId, shellNodes);
+                }
             }
         }
+
+        private static Func<bool, float, float> _in_range = (bool cheatMode, float angle) =>
+        {
+            if (cheatMode)
+            {
+                return angle < 1f ? 1f : (angle > 18f ? 18f : angle);
+            }
+            return angle < 4f ? 4f : (angle > 18f ? 18f : angle);
+        };
     }
 }

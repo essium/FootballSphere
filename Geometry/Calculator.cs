@@ -38,6 +38,8 @@ namespace FootballSphere.Geometry
         public static LLtude a11 = RatioPoint(o5, o7, rho);
         public static LLtude a12 = RatioPoint(o5, o7, 1f - rho);
         public static LLtude a12x = new LLtude(a12.phi, a12.lambda + 0.4f * Mathf.PI);
+        public static float bigAngle = AngularBetween(a1, a1x) * 180f / Mathf.PI;
+        public static float smallAngle = AngularBetween(a1, a2) * 180f / Mathf.PI;
 
         public static LLtude RatioPoint(LLtude p0, LLtude p1, float rho)
         {
@@ -51,10 +53,17 @@ namespace FootballSphere.Geometry
         {
             float l = Mathf.Sqrt(2f - 2f * Mathf.Cos(p0.phi) * Mathf.Cos(p1.phi) * Mathf.Cos(p1.lambda - p0.lambda)
                 - 2f * Mathf.Sin(p0.phi) * Mathf.Sin(p1.phi));
-            float theta = 2f * Mathf.Asin(0.5f * l);
+            float theta =  2f * Mathf.Asin(0.5f * l);
             float d = Mathf.Sin(0.5f * theta) - Mathf.Tan(0.5f * theta - rho * theta) * Mathf.Cos(0.5f * theta);
             float ratio = d / l;
             return RatioPoint(p0, p1, ratio);
+        }
+
+        public static float AngularBetween(LLtude p0, LLtude p1)
+        {
+            float l = Mathf.Sqrt(2f - 2f * Mathf.Cos(p0.phi) * Mathf.Cos(p1.phi) * Mathf.Cos(p1.lambda - p0.lambda)
+                - 2f * Mathf.Sin(p0.phi) * Mathf.Sin(p1.phi));
+            return 2f * Mathf.Asin(0.5f * l);
         }
     }
 }
