@@ -1,6 +1,7 @@
 ﻿using FootballSphere.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace FootballSphere
@@ -424,12 +425,33 @@ namespace FootballSphere
             CreateShell();
         }
 
-        public void Draw(DysonSphereLayer layer)
+        public void Draw(DysonSphereLayer layer, DrawType type)
         {
             bool lat75 = Mathf.RoundToInt(layer.gameData.history.dysonNodeLatitude) >= 75;
             bool lat90 = Mathf.RoundToInt(layer.gameData.history.dysonNodeLatitude) >= 90;
             Dictionary<int, int> order2index = new Dictionary<int, int>();
             float radius = layer.orbitRadius;
+            switch(type)
+            {
+                case DrawType.NODE:
+                    DrawNode(layer, cheatMode, lat75, radius, ref order2index);
+                    break;
+                case DrawType.FRAME:
+                    DrawNode(layer, cheatMode, lat75, radius, ref order2index);
+                    DrawFrame(layer, cheatMode, lat75, radius, ref order2index);
+                    break;
+                case DrawType.SHELL:
+                    DrawNode(layer, cheatMode, lat75, radius, ref order2index);
+                    DrawFrame(layer, cheatMode, lat75, radius, ref order2index);
+                    DrawShell(layer, cheatMode, lat90, radius, ref order2index);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void DrawNode(DysonSphereLayer layer, bool cheatMode, bool lat75, float radius, ref Dictionary<int, int> order2index)
+        {
             if (cheatMode || lat75)
             {
                 for (int i = 0; i < nodes.Length; i++)
@@ -437,6 +459,10 @@ namespace FootballSphere
                     order2index.Add(i, layer.NewDysonNode(FootballSphere.nodeProtoId, nodes[i].Position(radius)));
                 }
             }
+        }
+
+        private void DrawFrame(DysonSphereLayer layer, bool cheatMode, bool lat75, float radius, ref Dictionary<int, int> order2index)
+        {
             if (cheatMode || lat75)
             {
                 for (int i = 0; i < frames.Length; i++)
@@ -447,6 +473,10 @@ namespace FootballSphere
                     }
                 }
             }
+        }
+
+        private void DrawShell(DysonSphereLayer layer, bool cheatMode, bool lat90, float radius, ref Dictionary<int, int> order2index)
+        {
             if (cheatMode || lat90)
             {
                 for (int i = 0; i < shells.Length; i++)

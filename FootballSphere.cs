@@ -13,7 +13,7 @@ namespace FootballSphere
     {
         private const string package = "essium.DSP.FootballSphere";
         private const string plugin = "FootballSphere";
-        private const string version = "1.0.1";
+        private const string version = "1.0.2";
         private Harmony harmony;
         private static FootballData football;
         private static ManualLogSource logger;
@@ -22,13 +22,11 @@ namespace FootballSphere
         public static int frameProtoId;
         public static int shellProtoId;
 
-        private static ConfigEntry<string> keyBuild;
         private static ConfigEntry<bool> cheatMode;
         private static ConfigEntry<float> angle;
 
         private void BindConfig()
         {
-            keyBuild = Config.Bind("Config", "BuildShortKey", "q", "construct football sphere shortkey");
             cheatMode = Config.Bind("Config", "CheatMode", false, "cheat mode");
             angle = Config.Bind("Config", "Angle", 4f, "angle between two nodes");
         }
@@ -60,10 +58,18 @@ namespace FootballSphere
             nodeProtoId = __instance.nodeProtoId;
             frameProtoId = __instance.frameProtoId;
             shellProtoId = __instance.shellProtoId;
-            if (Input.GetKeyDown(keyBuild.Value))
+            DysonSphereLayer singleSelectedLayer = __instance.selection.singleSelectedLayer;
+            if (Input.GetKeyDown(KeyCode.N))
             {
-                DysonSphereLayer singleSelectedLayer = __instance.selection.singleSelectedLayer;
-                football.Draw(singleSelectedLayer);
+                football.Draw(singleSelectedLayer, DrawType.NODE);
+            }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                football.Draw(singleSelectedLayer, DrawType.FRAME);
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                football.Draw(singleSelectedLayer, DrawType.SHELL);
             }
         }
 
